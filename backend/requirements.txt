@@ -14,4 +14,8 @@ pytest==8.0.1
 pytest-django==4.8.0
 pytest-cov==4.1.0
 flake8==7.0.0
-black==24.2.0 
+black==24.2.0
+gunicorn==21.2.0
+whitenoise==6.6.0
+django-storages==1.14.2
+python-dotenv==1.0.1 
