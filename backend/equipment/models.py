@@ -9,7 +9,7 @@ from django.core.validators import MinValueValidator
 from django.utils import timezone
 
 class Equipment(models.Model):
-    """Model for tracking calibration equipment."""
+    """Equipment model for tracking calibration and maintenance."""
     
     name = models.CharField(max_length=200)
     model_number = models.CharField(max_length=100)
@@ -19,7 +19,7 @@ class Equipment(models.Model):
     location = models.CharField(max_length=200)
     purchase_date = models.DateField()
     last_calibration_date = models.DateField(null=True, blank=True)
-    next_calibration_date = models.DateField()
+    next_calibration_date = models.DateField(null=True, blank=True)
     calibration_interval_months = models.IntegerField(
         validators=[MinValueValidator(1)]
     )
