@@ -34,18 +34,31 @@ const EquipmentFormPage: React.FC = () => {
 
   const handleSubmit = async (data: Partial<Equipment>) => {
     try {
+      // Format the data before sending to backend
+      const formattedData = {
+        ...data,
+        // Format purchase_date as YYYY-MM-DD
+        purchase_date: data.purchase_date || null,
+        // Ensure calibration_interval_value is a number
+        calibration_interval_value: Number(data.calibration_interval_value),
+        // Ensure notes is a string or null
+        notes: data.notes || null,
+      };
+
+      console.log('Sending data to backend:', formattedData);
+
       if (id) {
-        await equipmentApi.update(parseInt(id), data);
+        await equipmentApi.update(parseInt(id), formattedData);
         showNotification('Equipment updated successfully', 'success');
       } else {
-        await equipmentApi.create(data);
+        await equipmentApi.create(formattedData);
         showNotification('Equipment created successfully', 'success');
       }
       navigate('/equipment');
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to save equipment data');
       showNotification('Failed to save equipment data', 'error');
-      console.error(err);
+      console.error('Error details:', err.response?.data || err);
     }
   };
 

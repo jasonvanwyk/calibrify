@@ -20,7 +20,7 @@ export const formatCalibrationDateTime = (
       return calibrationDate.toLocaleTimeString([], { 
         hour: '2-digit', 
         minute: '2-digit',
-        hour12: true 
+        hour12: true
       });
     }
     return calibrationDate.toLocaleString([], {
