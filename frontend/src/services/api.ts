@@ -42,7 +42,8 @@ export interface Equipment {
   purchase_date: string;
   last_calibration_date: string | null;
   next_calibration_date: string | null;
-  calibration_interval_months: number;
+  calibration_interval_type: 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+  calibration_interval_value: number;
   status: string;
   status_display: string;
   notes: string;

@@ -4,6 +4,7 @@ import { Box, Typography, Button, CircularProgress, Alert } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Add as AddIcon } from '@mui/icons-material';
 import { equipmentApi, Equipment } from '../services/api';
+import { formatCalibrationDateTime } from '../utils/dateFormatters';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -17,8 +18,12 @@ const columns: GridColDef[] = [
     field: 'next_calibration_date', 
     headerName: 'Next Calibration', 
     flex: 1,
-    valueFormatter: (params) => {
-      return params.value ? new Date(params.value).toLocaleDateString() : '-';
+    valueGetter: (params) => {
+      const equipment = params.row as Equipment;
+      return formatCalibrationDateTime(
+        equipment.next_calibration_date,
+        equipment.calibration_interval_type
+      );
     }
   },
 ];

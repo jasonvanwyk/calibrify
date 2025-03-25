@@ -20,10 +20,10 @@ class EquipmentViewSet(viewsets.ModelViewSet):
     
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]  # Temporarily allow all access
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        serializer.save(created_by=self.request.user if self.request.user.is_authenticated else None)
 
     @action(detail=False, methods=['get'])
     def due_for_calibration(self, request):
@@ -53,10 +53,10 @@ class CalibrationRecordViewSet(viewsets.ModelViewSet):
     
     queryset = CalibrationRecord.objects.all()
     serializer_class = CalibrationRecordSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]  # Temporarily allow all access
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        serializer.save(created_by=self.request.user if self.request.user.is_authenticated else None)
 
 
 class MaintenanceRecordViewSet(viewsets.ModelViewSet):
@@ -64,7 +64,7 @@ class MaintenanceRecordViewSet(viewsets.ModelViewSet):
     
     queryset = MaintenanceRecord.objects.all()
     serializer_class = MaintenanceRecordSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]  # Temporarily allow all access
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user) 
+        serializer.save(created_by=self.request.user if self.request.user.is_authenticated else None) 

@@ -20,8 +20,22 @@ class Equipment(models.Model):
     purchase_date = models.DateField()
     last_calibration_date = models.DateField(null=True, blank=True)
     next_calibration_date = models.DateField(null=True, blank=True)
-    calibration_interval_months = models.IntegerField(
-        validators=[MinValueValidator(1)]
+    calibration_interval_type = models.CharField(
+        max_length=20,
+        choices=[
+            ('hourly', 'Hourly'),
+            ('daily', 'Daily'),
+            ('weekly', 'Weekly'),
+            ('monthly', 'Monthly'),
+            ('yearly', 'Yearly'),
+        ],
+        default='monthly',
+        null=True
+    )
+    calibration_interval_value = models.IntegerField(
+        validators=[MinValueValidator(1)],
+        help_text="Number of intervals between calibrations",
+        null=True
     )
     status = models.CharField(
         max_length=20,
@@ -53,10 +67,22 @@ class Equipment(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.next_calibration_date and self.last_calibration_date:
-            # Calculate next calibration date based on interval
+            # Calculate next calibration date based on interval type and value
+            interval_days = 0
+            if self.calibration_interval_type == 'hourly':
+                interval_days = self.calibration_interval_value / 24
+            elif self.calibration_interval_type == 'daily':
+                interval_days = self.calibration_interval_value
+            elif self.calibration_interval_type == 'weekly':
+                interval_days = self.calibration_interval_value * 7
+            elif self.calibration_interval_type == 'monthly':
+                interval_days = self.calibration_interval_value * 30
+            elif self.calibration_interval_type == 'yearly':
+                interval_days = self.calibration_interval_value * 365
+
             self.next_calibration_date = (
                 self.last_calibration_date + 
-                timezone.timedelta(days=self.calibration_interval_months * 30)
+                timezone.timedelta(days=interval_days)
             )
         super().save(*args, **kwargs)
 

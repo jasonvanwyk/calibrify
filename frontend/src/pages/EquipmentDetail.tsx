@@ -16,6 +16,7 @@ import {
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { equipmentApi, Equipment } from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
+import { formatCalibrationDateTime } from '../utils/dateFormatters';
 
 const EquipmentDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -166,9 +167,10 @@ const EquipmentDetail: React.FC = () => {
               Last Calibration Date
             </Typography>
             <Typography variant="body1">
-              {equipment.last_calibration_date
-                ? new Date(equipment.last_calibration_date).toLocaleDateString()
-                : 'Never'}
+              {formatCalibrationDateTime(
+                equipment.last_calibration_date,
+                equipment.calibration_interval_type
+              )}
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -176,9 +178,10 @@ const EquipmentDetail: React.FC = () => {
               Next Calibration Date
             </Typography>
             <Typography variant="body1">
-              {equipment.next_calibration_date
-                ? new Date(equipment.next_calibration_date).toLocaleDateString()
-                : 'Not scheduled'}
+              {formatCalibrationDateTime(
+                equipment.next_calibration_date,
+                equipment.calibration_interval_type
+              )}
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -186,7 +189,7 @@ const EquipmentDetail: React.FC = () => {
               Calibration Interval
             </Typography>
             <Typography variant="body1">
-              {equipment.calibration_interval_months} months
+              {equipment.calibration_interval_value} {equipment.calibration_interval_type}
             </Typography>
           </Grid>
           {equipment.notes && (
