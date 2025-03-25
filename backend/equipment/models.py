@@ -18,8 +18,8 @@ class Equipment(models.Model):
     category = models.CharField(max_length=100)
     location = models.CharField(max_length=200)
     purchase_date = models.DateField()
-    last_calibration_date = models.DateField(null=True, blank=True)
-    next_calibration_date = models.DateField(null=True, blank=True)
+    last_calibration_date = models.DateTimeField(null=True, blank=True)
+    next_calibration_date = models.DateTimeField(null=True, blank=True)
     calibration_interval_type = models.CharField(
         max_length=20,
         choices=[

@@ -56,7 +56,43 @@ class CalibrationRecordViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]  # Temporarily allow all access
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user if self.request.user.is_authenticated else None)
+        data = serializer.validated_data
+        # Convert calibration_interval_value to integer if it's a string
+        if isinstance(data.get('calibration_interval_value'), str):
+            data['calibration_interval_value'] = int(
+                data['calibration_interval_value']
+            )
+        
+        # Set initial calibration dates based on interval type and value
+        now = timezone.now()
+        interval_type = data.get('calibration_interval_type')
+        interval_value = data.get('calibration_interval_value', 1)
+        
+        if interval_type == 'hourly':
+            next_calibration = now + timezone.timedelta(hours=interval_value)
+        elif interval_type == 'daily':
+            next_calibration = now + timezone.timedelta(days=interval_value)
+        elif interval_type == 'weekly':
+            next_calibration = now + timezone.timedelta(weeks=interval_value)
+        elif interval_type == 'monthly':
+            # Add months (approximate)
+            next_calibration = now + timezone.timedelta(
+                days=30 * interval_value
+            )
+        else:  # yearly
+            # Add years (approximate)
+            next_calibration = now + timezone.timedelta(
+                days=365 * interval_value
+            )
+        
+        serializer.save(
+            created_by=(
+                self.request.user if self.request.user.is_authenticated 
+                else None
+            ),
+            last_calibration_date=now,
+            next_calibration_date=next_calibration
+        )
 
 
 class MaintenanceRecordViewSet(viewsets.ModelViewSet):

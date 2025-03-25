@@ -40,6 +40,17 @@ class EquipmentSerializer(serializers.ModelSerializer):
         source='get_status_display',
         read_only=True
     )
+    purchase_date = serializers.DateField(format='%Y-%m-%d')
+    last_calibration_date = serializers.DateTimeField(
+        format='%Y-%m-%dT%H:%M:%S%z',
+        required=False,
+        allow_null=True
+    )
+    next_calibration_date = serializers.DateTimeField(
+        format='%Y-%m-%dT%H:%M:%S%z',
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = Equipment
