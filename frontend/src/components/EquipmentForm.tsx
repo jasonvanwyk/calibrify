@@ -45,7 +45,7 @@ const schema = yup.object().shape({
     .number()
     .required('Calibration interval value is required')
     .min(1, 'Interval value must be at least 1'),
-  notes: yup.string().optional(),
+  notes: yup.string().nullable(),
 }) as yup.ObjectSchema<EquipmentFormData>;
 
 interface EquipmentFormProps {
@@ -136,7 +136,13 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({
             type="date"
             label="Purchase Date"
             InputLabelProps={{ shrink: true }}
-            {...register('purchase_date')}
+            {...register('purchase_date', {
+              required: 'Purchase date is required',
+              validate: (value: string | null) => {
+                if (!value) return 'Purchase date is required';
+                return !isNaN(new Date(value).getTime()) || 'Invalid date';
+              }
+            })}
             error={!!errors.purchase_date}
             helperText={errors.purchase_date?.message}
           />

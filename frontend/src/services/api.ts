@@ -39,14 +39,14 @@ export interface Equipment {
   manufacturer: string;
   category: string;
   location: string;
-  purchase_date: string;
+  purchase_date: string | null;
   last_calibration_date: string | null;
   next_calibration_date: string | null;
   calibration_interval_type: 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly';
   calibration_interval_value: number;
   status: string;
   status_display: string;
-  notes: string;
+  notes: string | null;
   created_at: string;
   updated_at: string;
   created_by: number | null;

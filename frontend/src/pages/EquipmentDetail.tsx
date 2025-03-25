@@ -153,7 +153,9 @@ const EquipmentDetail: React.FC = () => {
               Purchase Date
             </Typography>
             <Typography variant="body1">
-              {new Date(equipment.purchase_date).toLocaleDateString()}
+              {equipment.purchase_date 
+                ? new Date(equipment.purchase_date as string).toLocaleDateString()
+                : '-'}
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
