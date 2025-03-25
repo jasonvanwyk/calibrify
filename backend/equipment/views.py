@@ -23,7 +23,89 @@ class EquipmentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]  # Temporarily allow all access
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user if self.request.user.is_authenticated else None)
+        data = serializer.validated_data
+        # Set default status if not provided
+        if 'status' not in data:
+            data['status'] = 'active'
+            
+        # Calculate next calibration date if last_calibration_date is provided
+        last_calibration = data.get('last_calibration_date')
+        next_calibration = data.get('next_calibration_date')
+        
+        if last_calibration and not next_calibration:
+            interval_days = 0
+            interval_value = data.get('calibration_interval_value', 1)
+            interval_type = data.get('calibration_interval_type')
+
+            if interval_type == 'hourly':
+                interval_days = interval_value / 24
+            elif interval_type == 'daily':
+                interval_days = interval_value
+            elif interval_type == 'weekly':
+                interval_days = interval_value * 7
+            elif interval_type == 'monthly':
+                interval_days = interval_value * 30
+            elif interval_type == 'yearly':
+                interval_days = interval_value * 365
+
+            data['next_calibration_date'] = (
+                last_calibration + 
+                timezone.timedelta(days=interval_days)
+            )
+        
+        # Ensure calibration interval fields are properly set
+        if ('calibration_interval_type' in data and 
+            'calibration_interval_value' in data):
+            # Convert calibration_interval_value to integer if it's a string
+            if isinstance(data['calibration_interval_value'], str):
+                data['calibration_interval_value'] = int(
+                    data['calibration_interval_value']
+                )
+        
+        serializer.save(
+            created_by=(
+                self.request.user if self.request.user.is_authenticated 
+                else None
+            )
+        )
+
+    def perform_update(self, serializer):
+        data = serializer.validated_data
+        # Calculate next calibration date if last_calibration_date is updated
+        last_calibration = data.get('last_calibration_date')
+        next_calibration = data.get('next_calibration_date')
+        
+        if last_calibration and not next_calibration:
+            interval_days = 0
+            interval_value = data.get('calibration_interval_value', 1)
+            interval_type = data.get('calibration_interval_type')
+
+            if interval_type == 'hourly':
+                interval_days = interval_value / 24
+            elif interval_type == 'daily':
+                interval_days = interval_value
+            elif interval_type == 'weekly':
+                interval_days = interval_value * 7
+            elif interval_type == 'monthly':
+                interval_days = interval_value * 30
+            elif interval_type == 'yearly':
+                interval_days = interval_value * 365
+
+            data['next_calibration_date'] = (
+                last_calibration + 
+                timezone.timedelta(days=interval_days)
+            )
+        
+        # Ensure calibration interval fields are properly set
+        if ('calibration_interval_type' in data and 
+            'calibration_interval_value' in data):
+            # Convert calibration_interval_value to integer if it's a string
+            if isinstance(data['calibration_interval_value'], str):
+                data['calibration_interval_value'] = int(
+                    data['calibration_interval_value']
+                )
+        
+        serializer.save()
 
     @action(detail=False, methods=['get'])
     def due_for_calibration(self, request):

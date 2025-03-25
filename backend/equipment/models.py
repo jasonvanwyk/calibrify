@@ -65,9 +65,40 @@ class Equipment(models.Model):
     def __str__(self):
         return f"{self.name} ({self.serial_number})"
 
+    def calculate_status(self):
+        """Calculate the equipment status based on calibration dates."""
+        now = timezone.now()
+        
+        # If equipment is retired, keep it retired
+        if self.status == 'retired':
+            return 'retired'
+            
+        # If equipment is in maintenance, keep it in maintenance
+        if self.status == 'maintenance':
+            return 'maintenance'
+            
+        # Check calibration status
+        if not self.last_calibration_date:
+            return 'calibration_overdue'
+            
+        if not self.next_calibration_date:
+            return 'calibration_overdue'
+            
+        # Calculate warning threshold (7 days before due date)
+        warning_threshold = (
+            self.next_calibration_date - timezone.timedelta(days=7)
+        )
+        
+        if now > self.next_calibration_date:
+            return 'calibration_overdue'
+        elif now > warning_threshold:
+            return 'calibration_due'
+        else:
+            return 'active'
+
     def save(self, *args, **kwargs):
+        # Calculate next calibration date if last_calibration_date is provided
         if not self.next_calibration_date and self.last_calibration_date:
-            # Calculate next calibration date based on interval type and value
             interval_days = 0
             if self.calibration_interval_type == 'hourly':
                 interval_days = self.calibration_interval_value / 24
@@ -84,6 +115,10 @@ class Equipment(models.Model):
                 self.last_calibration_date + 
                 timezone.timedelta(days=interval_days)
             )
+        
+        # Calculate status based on current state
+        self.status = self.calculate_status()
+        
         super().save(*args, **kwargs)
 
 class CalibrationRecord(models.Model):

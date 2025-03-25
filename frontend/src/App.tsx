@@ -7,6 +7,7 @@ import EquipmentList from "./pages/EquipmentList";
 import EquipmentDetail from "./pages/EquipmentDetail";
 import EquipmentFormPage from "./pages/EquipmentFormPage";
 import CalibrationList from "./pages/CalibrationList";
+import CalibrationFormPage from "./pages/CalibrationFormPage";
 import MaintenanceList from "./pages/MaintenanceList";
 import { NotificationProvider } from "./contexts/NotificationContext";
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="/equipment/:id" element={<EquipmentDetail />} />
             <Route path="/equipment/:id/edit" element={<EquipmentFormPage />} />
             <Route path="/calibrations" element={<CalibrationList />} />
+            <Route path="/calibrations/new" element={<CalibrationFormPage />} />
             <Route path="/maintenance" element={<MaintenanceList />} />
           </Routes>
         </Layout>
