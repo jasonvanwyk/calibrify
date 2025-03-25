@@ -34,12 +34,21 @@ api.interceptors.response.use(
 export interface Equipment {
   id: number;
   name: string;
-  model: string;
+  model_number: string;
   serial_number: string;
+  manufacturer: string;
+  category: string;
   location: string;
+  purchase_date: string;
+  last_calibration_date: string | null;
+  next_calibration_date: string | null;
+  calibration_interval_months: number;
   status: string;
-  next_calibration_date: string;
-  next_maintenance_date: string;
+  status_display: string;
+  notes: string;
+  created_at: string;
+  updated_at: string;
+  created_by: number | null;
 }
 
 export interface Calibration {
@@ -62,8 +71,15 @@ export interface Maintenance {
   notes: string;
 }
 
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
 export const equipmentApi = {
-  getAll: () => api.get<Equipment[]>('/equipment/'),
+  getAll: () => api.get<PaginatedResponse<Equipment>>('/equipment/'),
   getById: (id: number) => api.get<Equipment>(`/equipment/${id}/`),
   create: (data: Partial<Equipment>) => api.post<Equipment>('/equipment/', data),
   update: (id: number, data: Partial<Equipment>) => api.put<Equipment>(`/equipment/${id}/`, data),
